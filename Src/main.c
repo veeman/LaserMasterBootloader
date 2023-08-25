@@ -122,11 +122,27 @@ bool bootkey_detected(void){
 }
 #endif
 
+uint32_t volatile updateTimeStamp = 0;
+
 void control_led_states(void)
 {
 #if defined(LED_RED_Pin) || defined(LED_BLUE_Pin)
     uint32_t tick = HAL_GetTick();
-    if ((tick % 100) >= 50)
+
+    if (updateTimeStamp & 1)
+    {
+        #if defined(LED_RED_Pin)
+                LL_GPIO_SetOutputPin(LED_RED_GPIO_Port, LED_RED_Pin);
+        #endif
+        #if defined(LED_BLUE_Pin)
+                LL_GPIO_SetOutputPin(LED_BLUE_GPIO_Port, LED_BLUE_Pin);
+        #endif
+        uint32_t diff = tick - (updateTimeStamp & ~1);
+        if (diff > 500) {
+            updateTimeStamp = 0;
+        }
+    }
+    else if ((tick % 100) >= 50)
     {
 #if defined(LED_RED_Pin)
         LL_GPIO_SetOutputPin(LED_RED_GPIO_Port, LED_RED_Pin);

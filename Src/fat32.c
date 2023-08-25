@@ -325,6 +325,8 @@ static void _fat32_read_firmware(uint8_t *b, uint32_t addr)
 
 static bool _fat32_write_firmware(uint32_t phy_addr, const uint8_t *buf, uint8_t size)
 {
+    updateTimeStamp = HAL_GetTick() | 1;
+
     bool return_status = true;
   
     HAL_StatusTypeDef status;

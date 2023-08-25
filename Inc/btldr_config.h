@@ -41,5 +41,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #define BOOTKEY                             0x12345678
 
+extern uint32_t volatile updateTimeStamp;
 
 #endif
