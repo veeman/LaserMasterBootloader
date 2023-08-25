@@ -68,8 +68,12 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define BTLDR_EN_Pin LL_GPIO_PIN_0
-#define BTLDR_EN_GPIO_Port GPIOA
+#define BTLDR_EN_Pin LL_GPIO_PIN_13
+#define BTLDR_EN_GPIO_Port GPIOC
+#define LED_RED_Pin LL_GPIO_PIN_15
+#define LED_RED_GPIO_Port GPIOA
+#define LED_BLUE_Pin LL_GPIO_PIN_3
+#define LED_BLUE_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

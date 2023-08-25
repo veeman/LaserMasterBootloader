@@ -122,6 +122,31 @@ bool bootkey_detected(void){
 }
 #endif
 
+void control_led_states(void)
+{
+#if defined(LED_RED_Pin) || defined(LED_BLUE_Pin)
+    uint32_t tick = HAL_GetTick();
+    if ((tick % 100) >= 50)
+    {
+#if defined(LED_RED_Pin)
+        LL_GPIO_SetOutputPin(LED_RED_GPIO_Port, LED_RED_Pin);
+#endif
+#if defined(LED_BLUE_Pin)
+        LL_GPIO_SetOutputPin(LED_BLUE_GPIO_Port, LED_BLUE_Pin);
+#endif
+    }
+    else
+    {
+#if defined(LED_RED_Pin)
+        LL_GPIO_ResetOutputPin(LED_RED_GPIO_Port, LED_RED_Pin);
+#endif
+#if defined(LED_BLUE_Pin)
+        LL_GPIO_ResetOutputPin(LED_BLUE_GPIO_Port, LED_BLUE_Pin);
+#endif
+    }
+#endif
+}
+
 extern PCD_HandleTypeDef hpcd_USB_FS;
 
 void SystemReset(void){
@@ -195,6 +220,7 @@ int main(void)
     MX_USB_DEVICE_Init();
     while(1)
     {
+        control_led_states();
 #if (CONFIG_SOFT_RESET_AFTER_IHEX_EOF > 0u)
       if(ihex_is_eof()) {
         #if (BTLDR_ACT_BootkeyDet > 0u)
@@ -299,13 +325,35 @@ static void MX_GPIO_Init(void)
 
   /* GPIO Ports Clock Enable */
   LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOA);
+  LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOB);
+  LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOC);
 
   /**/
   GPIO_InitStruct.Pin = BTLDR_EN_Pin;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = LL_GPIO_PULL_UP;
+  GPIO_InitStruct.OutputType = 0;
   LL_GPIO_Init(BTLDR_EN_GPIO_Port, &GPIO_InitStruct);
 
+#ifdef LED_RED_Pin
+  GPIO_InitStruct.Pin = LED_RED_Pin;
+  GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
+  GPIO_InitStruct.Pull = 0;
+  GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
+  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_HIGH;
+  LL_GPIO_Init(LED_RED_GPIO_Port, &GPIO_InitStruct);
+  LL_GPIO_ResetOutputPin(LED_RED_GPIO_Port, LED_RED_Pin);
+#endif
+
+#ifdef LED_BLUE_Pin
+  GPIO_InitStruct.Pin = LED_BLUE_Pin;
+  GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
+  GPIO_InitStruct.Pull = 0;
+  GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
+  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_HIGH;
+  LL_GPIO_Init(LED_BLUE_GPIO_Port, &GPIO_InitStruct);
+  LL_GPIO_ResetOutputPin(LED_BLUE_GPIO_Port, LED_BLUE_Pin);
+#endif
 }
 
 /* USER CODE BEGIN 4 */
